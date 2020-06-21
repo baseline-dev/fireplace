@@ -1,0 +1,43 @@
+{
+  "name": "@baseline-dev/fireplace",
+  "version": "0.0.1",
+  "description": "User management for DynamoDB",
+  "main": "src/index.js",
+  "scripts": {
+    "test:unit": "tape --require esm src/*.test.js src/**/*.test.js src/**/**/*.test.js | tap-spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/baseline-dev/fireplace.git"
+  },
+  "keywords": [
+    "dynamodb",
+    "user",
+    "management"
+  ],
+  "author": "Nikolai Onken <nikolai@nikolaionken.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/baseline-dev/fireplace/issues"
+  },
+  "homepage": "https://github.com/baseline-dev/fireplace#readme",
+  "dependencies": {
+    "aws-sdk": "^2.701.0",
+    "bcrypt": "^5.0.0",
+    "config": "^3.3.1",
+    "esm": "^3.2.25",
+    "fastest-validator": "^1.5.1",
+    "lodash.get": "^4.4.2",
+    "lodash.isempty": "^4.4.0",
+    "lodash.omit": "^4.5.0",
+    "lodash.pick": "^4.4.0",
+    "ulid": "^2.3.0"
+  },
+  "devDependencies": {
+    "@baseline-dev/gaffertape": "0.0.4",
+    "faker": "^4.1.0",
+    "node-env-file": "^0.1.8",
+    "tap-spec": "^5.0.0",
+    "tape": "^5.0.1"
+  }
+}
