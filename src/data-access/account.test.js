@@ -445,7 +445,7 @@ test('updatePassword returns 404 if invalid user id gets passed', async (t) => {
 });
 
 test('updatePassword validates password input', async (t) => {
-  t.plan(3);
+  t.plan(5);
   try {
     const response = await updatePassword('123', '2', '2');
     t.fail('Should not get here');
@@ -453,6 +453,8 @@ test('updatePassword validates password input', async (t) => {
     t.equal(e.statusCode, 400);
     t.equal(e.message, 'Validation failed.');
     t.equal(e.errors.length, 1);
+    t.equal(e.errors[0].message, 'Your password should be at least 7 characters long.');
+    t.equal(e.errors[0].field, 'newPassword');
   }
 });
 
@@ -464,7 +466,7 @@ test('updatePassword fails when invalid password is provided', setupFixtures(
     scope: ['user']
   }, true),
   async (t, ctx) => {
-    t.plan(3);
+    t.plan(4);
     let _response;
     try {
       await updatePassword(ctx.account.id, '12345sdsdsds', '2dsdsdsdsdsds');
@@ -473,6 +475,7 @@ test('updatePassword fails when invalid password is provided', setupFixtures(
       t.equal(e.statusCode, 400);
       t.equal(e.message, 'Validation failed.');
       t.equal(e.errors[0].message, 'The password provided is not valid.');
+      t.equal(e.errors[0].field, 'password');
     }
   }
 ));
@@ -729,6 +732,27 @@ test('updatePasswordWithToken returns 404 for invalid hash', async (t) => {
   } catch(e) {
     t.equal(e.message, 'You provided an invalid token to reset your password.');
     t.equal(e.statusCode, 404);
+  }
+});
+
+test('updatePasswordWithToken validates password.', async (t) => {
+  t.plan(3);
+  try {
+    const _response = await createAccount({
+      password: '12345678',
+      email: faker.internet.exampleEmail(),
+      fullName: 'Hi there',
+      scope: ['user']
+    });
+
+    const tokenResponse = await requestPasswordReset(_response.result.account.email);
+    const response = await updatePasswordWithToken(tokenResponse.result.hash, '123');
+
+    await deleteAccount(_response.result.account.id);
+  } catch(e) {
+    t.equal(e.statusCode, 400);
+    t.equal(e.errors[0].field, 'password');
+    t.equal(e.errors[0].message, 'Your password should be at least 7 characters long.');
   }
 });
 

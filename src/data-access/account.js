@@ -27,10 +27,6 @@ function getAccountProperties(item) {
 }
 
 async function hashPassword(password, attrs, options) {
-  if (!password || password.length < 7) {
-    throw new Error('The password needs to be at least 7 characters long');
-  }
-
   const salt = await bcrypt.genSalt(10);
   return await bcrypt.hash(password, salt);
 }
