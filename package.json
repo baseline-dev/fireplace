@@ -7,7 +7,7 @@
     "test:unit": "tape --require esm src/*.test.js src/**/*.test.js src/**/**/*.test.js | tap-spec",
     "coverage": "nyc npm run test:unit",
     "release": "npm version patch",
-    "publish": "npm run test:unit && npm run release && npm publish --access public"
+    "publish:npm": "npm run test:unit && npm run release && npm publish --access public"
   },
   "repository": {
     "type": "git",
