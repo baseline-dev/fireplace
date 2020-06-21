@@ -1,6 +1,6 @@
 {
   "name": "@baseline-dev/fireplace",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "User management for DynamoDB",
   "main": "src/index.js",
   "scripts": {
