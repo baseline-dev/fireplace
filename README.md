@@ -2,12 +2,12 @@
 
 User management for DynamoDB.
 
-# Table keys
+# DynamoDB schema
 
-| pk                           | sk                           | gsi1pk           | gsi1sk         |
-|------------------------------|------------------------------|------------------|----------------|
-| #ACCOUNT{USERID}             | #ACCOUNT{USERID}             |                  |                |
-| #EMAIL{EMAIL}                | #EMAIL{EMAIL}                |                  |                |
-| #CHANGEEMAILREQUEST{HASH}    | #CHANGEEMAILREQUEST{HASH}    |                  |                |
-| #CHANGEPASSWORDREQUEST{HASH} | #CHANGEPASSWORDREQUEST{HASH} |                  |                |
+| pk                           | sk                           |
+|------------------------------|------------------------------|
+| #ACCOUNT{USERID}             | #ACCOUNT{USERID}             |
+| #EMAIL{EMAIL}                | #EMAIL{EMAIL}                |
+| #CHANGEEMAILREQUEST{HASH}    | #CHANGEEMAILREQUEST{HASH}    |
+| #CHANGEPASSWORDREQUEST{HASH} | #CHANGEPASSWORDREQUEST{HASH} |
 
