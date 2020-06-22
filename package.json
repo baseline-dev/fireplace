@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/baseline-dev/fireplace#readme",
   "dependencies": {
+    "@baseline-dev/reporter": "0.0.2",
     "aws-sdk": "^2.701.0",
     "bcrypt": "^5.0.0",
     "config": "^3.3.1",
@@ -34,6 +35,9 @@
     "lodash.isempty": "^4.4.0",
     "lodash.omit": "^4.5.0",
     "lodash.pick": "^4.4.0",
+    "nodemailer": "^6.4.10",
+    "nunjucks": "^3.2.1",
+    "parse-full-name": "^1.2.4",
     "ulid": "^2.3.0"
   },
   "devDependencies": {

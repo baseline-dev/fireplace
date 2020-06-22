@@ -6,5 +6,5 @@ const mode = process.env.NODE_ENV;
 const isDev = typeof mode === 'undefined' || mode === 'development';
 
 if (isDev) {
-  env(path.join(process.cwd(), '.env-dev'))
+  env(path.join(process.cwd(), '.env.test'))
 }

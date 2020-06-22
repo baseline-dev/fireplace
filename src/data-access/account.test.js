@@ -26,7 +26,7 @@ test('createAccount validation', async function (t) {
   } catch(e) {
     t.equal(e.statusCode, 400);
     t.equal(e.message, 'Validation failed.');
-    t.equal(e.name, 'BaselineError');
+    t.equal(e.name, 'Error');
     t.equal(e.errors.length, 3);
     t.equal(e.errors[0].message, 'Please provide a valid email.');
     t.equal(e.errors[1].message, 'Please provide your name.');
@@ -57,6 +57,7 @@ test('createAccount', async function (t) {
 
     await deleteAccount(result.account.id);
   } catch(e) {
+    console.log(e)
     t.fail('Should not get here');
   }
 });
@@ -68,7 +69,7 @@ test('setupAccountPassword validates no input', async (t) => {
   } catch(e) {
     t.equal(e.statusCode, 400);
     t.equal(e.message, 'Validation failed.');
-    t.equal(e.name, 'BaselineError');
+    t.equal(e.name, 'Error');
     t.equal(e.errors.length, 2);
     t.equal(e.errors[0].message, 'Please provide the token.');
     t.equal(e.errors[1].message, 'Please provide a password.');
@@ -82,7 +83,7 @@ test('setupAccountPassword validates invalid input', async (t) => {
   } catch(e) {
     t.equal(e.statusCode, 400);
     t.equal(e.message, 'Validation failed.');
-    t.equal(e.name, 'BaselineError');
+    t.equal(e.name, 'Error');
     t.equal(e.errors.length, 1);
     t.equal(e.errors[0].message, 'Your password should be at least 7 characters long.');
   }

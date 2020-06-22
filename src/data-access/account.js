@@ -1,9 +1,8 @@
 import { ulid } from 'ulid';
 import bcrypt from 'bcrypt';
 import Validator from 'fastest-validator';
-import { BaselineError } from '../lib/error';
+import { BaselineError, BaselineSuccess } from '@baseline-dev/reporter';
 import { translateValidationErrors } from '../lib/translate-validation-errors';
-import { BaselineResponse } from '../lib/response';
 import omit from 'lodash.omit';
 import pick from 'lodash.pick';
 import get from 'lodash.get';
@@ -51,7 +50,7 @@ async function getAccount(id) {
       });
     }
 
-    return new BaselineResponse({
+    return new BaselineSuccess({
       statusCode: 200,
       result: getAccountProperties(account.Item)
     });
@@ -166,7 +165,7 @@ async function createAccount(account = {}) {
 
   try {
     await transactWrite(params);
-    return new BaselineResponse({
+    return new BaselineSuccess({
       result: {
         account: omit(accountProps, ['password']),
         hash: changeEmailId
@@ -223,7 +222,7 @@ async function deleteAccount(id) {
 
   try {
     await docClient.transactWrite(params).promise();
-    return new BaselineResponse({
+    return new BaselineSuccess({
       statusCode: 204
     })
   } catch (err) {
@@ -310,7 +309,7 @@ async function updateAccount(id, accountProps) {
       });
     }
 
-    return new BaselineResponse({
+    return new BaselineSuccess({
       statusCode: 200,
       result: getAccountProperties(account.Attributes)
     });
@@ -380,7 +379,7 @@ async function updatePassword(id, oldPassword, newPassword) {
       });
     }
 
-    return new BaselineResponse({
+    return new BaselineSuccess({
       statusCode: 200
     });
   } catch (e) {
@@ -469,7 +468,7 @@ async function requestEmailChange(id, newEmail) {
   try {
     await transactWrite(params);
 
-    return new BaselineResponse({
+    return new BaselineSuccess({
       result: {
         hash: changeEmailId,
         account: account.result
@@ -594,7 +593,7 @@ async function updateEmailWithToken(token, _testNow) {
 
     await transactWrite(params);
 
-    return new BaselineResponse({
+    return new BaselineSuccess({
       statusCode: 200
     });
   } catch (e) {
@@ -658,7 +657,7 @@ async function requestPasswordReset(email) {
 
   try {
     const response = await docClient.transactWrite(params).promise();
-    return new BaselineResponse({
+    return new BaselineSuccess({
       result: {
         hash: changePasswordHash,
         account: account.result
@@ -741,7 +740,7 @@ async function updatePasswordWithToken(token, newPassword, _testNow) {
 
     const transaction = await docClient.transactWrite(params).promise();
 
-    return new BaselineResponse({
+    return new BaselineSuccess({
       statusCode: 200
     });
   } catch (e) {
@@ -827,7 +826,7 @@ async function setupAccountPassword(token, password, _testNow) {
 
     await transactWrite(params);
 
-    return new BaselineResponse({
+    return new BaselineSuccess({
       statusCode: 200,
       result: {
         account: {

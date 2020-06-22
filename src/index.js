@@ -1,9 +1,37 @@
-import accountDataAccess from './data-access/account';
-import accountActions from './action/account';
-import authActions from './action/auth';
+import {
+  getAccount,
+  getAccountByEmail,
+  createAccount,
+  deleteAccount,
+  updateAccount,
+  updatePassword,
+  isValidPassword,
+  requestEmailChange,
+  updateEmailWithToken,
+  requestPasswordReset,
+  updatePasswordWithToken,
+  setupAccountPassword
+} from './data-access/account';
+
+if (!process.env.BASELINE_FIREPLACE_DYNAMODB_TABLENAME) {
+  throw new Error(`Please configure the environment variable 'BASELINE_FIREPLACE_DYNAMODB_TABLENAME'.`);
+}
+
+if (!process.env.BASELINE_FIREPLACE_DYNAMODB_REGION) {
+  throw new Error(`Please configure the environment variable 'BASELINE_FIREPLACE_DYNAMODB_REGION'.`);
+}
 
 export {
-    accountDataAccess,
-    accountActions,
-    authActions
+  getAccount,
+  getAccountByEmail,
+  createAccount,
+  deleteAccount,
+  updateAccount,
+  updatePassword,
+  isValidPassword,
+  requestEmailChange,
+  updateEmailWithToken,
+  requestPasswordReset,
+  updatePasswordWithToken,
+  setupAccountPassword
 }
