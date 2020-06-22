@@ -1,5 +1,5 @@
 import faker from 'faker';
-import {createAccount, deleteAccount, setupAccountPassword} from '../../src/data-access/account';
+import {createAccount, deleteAccount, setupAccountPassword} from '../../src/account';
 
 function createAccountFixture(accountProps, validate) {
   return async function(ctx) {

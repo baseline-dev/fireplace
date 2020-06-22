@@ -11,7 +11,7 @@ import {
   requestPasswordReset,
   updatePasswordWithToken,
   setupAccountPassword
-} from './data-access/account';
+} from './account';
 
 if (!process.env.BASELINE_FIREPLACE_DYNAMODB_TABLENAME) {
   throw new Error(`Please configure the environment variable 'BASELINE_FIREPLACE_DYNAMODB_TABLENAME'.`);

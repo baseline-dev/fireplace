@@ -1,5 +1,5 @@
 import AWS from 'aws-sdk';
-import { getTransactWrite } from './helper/transact-write';
+import { getTransactWrite } from './transact-write';
 
 const tableName = process.env.BASELINE_FIREPLACE_DYNAMODB_TABLENAME;
 

@@ -1,4 +1,8 @@
-# Fireplace
+# Getting started
+
+```
+npm install @baseline-dev/fireplace
+```
 
 User management for DynamoDB.
 

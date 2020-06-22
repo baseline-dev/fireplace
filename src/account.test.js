@@ -1,4 +1,4 @@
-import '../../test/_env';
+import '../test/_env';
 import test from 'tape';
 import setupFixtures from '@baseline-dev/gaffertape';
 
@@ -13,7 +13,7 @@ import {
   requestEmailChange, updateEmailWithToken, requestPasswordReset, updatePasswordWithToken, setupAccountPassword
 } from './account';
 import faker from 'faker';
-import {createAccountFixture} from '../../test/fixtures/account';
+import {createAccountFixture} from '../test/fixtures/account';
 
 test('createAccount validation', async function (t) {
   t.plan(7);

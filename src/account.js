@@ -2,12 +2,12 @@ import { ulid } from 'ulid';
 import bcrypt from 'bcrypt';
 import Validator from 'fastest-validator';
 import { BaselineError, BaselineSuccess } from '@baseline-dev/reporter';
-import { translateValidationErrors } from '../lib/translate-validation-errors';
+import { translateValidationErrors } from './lib/translate-validation-errors';
 import omit from 'lodash.omit';
 import pick from 'lodash.pick';
 import get from 'lodash.get';
 import isEmpty from 'lodash.isempty';
-import { transactWrite, docClient, tableName } from './client';
+import { transactWrite, docClient, tableName } from './lib/client';
 import accountSchema from './account-schema';
 
 const validator = new Validator();
