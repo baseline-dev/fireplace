@@ -1,8 +1,8 @@
 import faker from 'faker';
-import {createAccount, deleteAccount, setupAccountPassword} from '../../src/account';
+import { createAccount, deleteAccount, setupAccountPassword } from '../../src/account';
 
 function createAccountFixture(accountProps, validate) {
-  return async function(ctx) {
+  return async function (ctx) {
     accountProps = accountProps || {
       password: '12345678',
       email: faker.internet.exampleEmail(),
@@ -10,7 +10,7 @@ function createAccountFixture(accountProps, validate) {
       scope: ['user']
     };
 
-    const {result} = await createAccount(accountProps);
+    const { result } = await createAccount(accountProps);
     ctx.account = result.account;
     ctx.account._hash = result.hash;
 
@@ -24,7 +24,7 @@ function createAccountFixture(accountProps, validate) {
     ctx._teardown.push(async (ctx) => {
       try {
         await deleteAccount(result.id);
-      } catch(e) {}
+      } catch (e) { }
     })
   }
 }

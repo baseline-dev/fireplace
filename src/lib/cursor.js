@@ -9,13 +9,13 @@ function getKey() {
   return key;
 }
 
-function encrypt(string){
+function encrypt(string) {
   const iv = Buffer.alloc(16, 0);
   const cipher = crypto.createCipheriv(algorithm, getKey(), iv);
   return cipher.update(string, 'utf8', 'hex') + cipher.final('hex');
 }
 
-function decrypt(string){
+function decrypt(string) {
   const iv = Buffer.alloc(16, 0);
   const decipher = crypto.createDecipheriv(algorithm, getKey(), iv);
   return decipher.update(string, 'hex', 'utf8') + decipher.final('utf8'); //deciphered text

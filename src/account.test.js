@@ -13,7 +13,7 @@ import {
   requestEmailChange, updateEmailWithToken, requestPasswordReset, updatePasswordWithToken, setupAccountPassword
 } from './account';
 import faker from 'faker';
-import {createAccountFixture} from '../test/fixtures/account';
+import { createAccountFixture } from '../test/fixtures/account';
 
 test('createAccount validation', async function (t) {
   t.plan(7);
@@ -23,7 +23,7 @@ test('createAccount validation', async function (t) {
       email: 123,
       fullName: undefined
     });
-  } catch(e) {
+  } catch (e) {
     t.equal(e.statusCode, 400);
     t.equal(e.message, 'Validation failed.');
     t.equal(e.name, 'Error');
@@ -37,7 +37,7 @@ test('createAccount validation', async function (t) {
 test('createAccount', async function (t) {
   t.plan(11);
   try {
-    const {result, statusCode} = await createAccount({
+    const { result, statusCode } = await createAccount({
       email: faker.internet.exampleEmail(),
       fullName: 'Hi there',
       scope: ['user']
@@ -56,7 +56,7 @@ test('createAccount', async function (t) {
     t.ok(result.hash, 'Email verification hash should exist.');
 
     await deleteAccount(result.account.id);
-  } catch(e) {
+  } catch (e) {
     console.log(e)
     t.fail('Should not get here');
   }
@@ -66,7 +66,7 @@ test('setupAccountPassword validates no input', async (t) => {
   t.plan(6);
   try {
     await setupAccountPassword();
-  } catch(e) {
+  } catch (e) {
     t.equal(e.statusCode, 400);
     t.equal(e.message, 'Validation failed.');
     t.equal(e.name, 'Error');
@@ -80,7 +80,7 @@ test('setupAccountPassword validates invalid input', async (t) => {
   t.plan(5);
   try {
     await setupAccountPassword('123', '123');
-  } catch(e) {
+  } catch (e) {
     t.equal(e.statusCode, 400);
     t.equal(e.message, 'Validation failed.');
     t.equal(e.name, 'Error');
@@ -93,7 +93,7 @@ test('setupAccountPassword validates invalid input', async (t) => {
   t.plan(2);
   try {
     await setupAccountPassword('123', '123123123');
-  } catch(e) {
+  } catch (e) {
     t.equal(e.statusCode, 404);
     t.equal(e.message, 'You provided an invalid token to setup your account.');
   }
@@ -104,7 +104,7 @@ test('setupAccountPassword sets password and account status to `active`', setupF
   async (t, ctx) => {
     t.plan(3);
     try {
-      const {statusCode} = await setupAccountPassword(ctx.account._hash, '123123123');
+      const { statusCode } = await setupAccountPassword(ctx.account._hash, '123123123');
       t.equal(statusCode, 200);
 
       const response = await getAccount(ctx.account.id);
@@ -112,7 +112,7 @@ test('setupAccountPassword sets password and account status to `active`', setupF
 
       const isValid = await isValidPassword(ctx.account.id, '123123123');
       t.equal(isValid, true);
-    } catch(e) {}
+    } catch (e) { }
   }
 ));
 
@@ -121,10 +121,10 @@ test('setupAccountPassword returns account with id property', setupFixtures(
   async (t, ctx) => {
     t.plan(2);
     try {
-      const {statusCode, result} = await setupAccountPassword(ctx.account._hash, '123123123');
+      const { statusCode, result } = await setupAccountPassword(ctx.account._hash, '123123123');
       t.equal(statusCode, 200);
       t.equal(result.account.id, ctx.account.id);
-    } catch(e) {}
+    } catch (e) { }
   }
 ));
 
@@ -132,7 +132,7 @@ test('getAccount which does not exist', async function (t) {
   t.plan(3);
   try {
     await getAccount('123');
-  } catch(e) {
+  } catch (e) {
     t.equal(e.statusCode, 404);
     t.equal(e.message, 'The account with id "123" does not exist.');
     t.equal(e.errors.length, 0);
@@ -150,7 +150,7 @@ test('getAccount', async function (t) {
       scope: ['user']
     });
 
-    const {statusCode, result} = await getAccount(response.result.account.id);
+    const { statusCode, result } = await getAccount(response.result.account.id);
 
     t.equal(statusCode, 200);
     t.equal(result.fullName, 'Hi there');
@@ -163,7 +163,7 @@ test('getAccount', async function (t) {
     t.notOk(result.password, 'Password should not be returned.');
 
     await deleteAccount(response.result.account.id);
-  } catch(e) {
+  } catch (e) {
     t.fail('Should not get here');
   }
 });
@@ -176,7 +176,7 @@ test('updateAccount which does not exist', async function (t) {
     });
 
     t.fail('Should not get here');
-  } catch(e) {
+  } catch (e) {
     t.equal(e.message, 'The account with id "123" does not exist.');
     t.equal(e.statusCode, 404);
   }
@@ -187,7 +187,7 @@ test('updateAccount updates attributes', setupFixtures(
   async function (t, ctx) {
     t.plan(4);
     try {
-      const {result, statusCode} = await updateAccount(ctx.account.id, {
+      const { result, statusCode } = await updateAccount(ctx.account.id, {
         fullName: 'Cooleo',
         billing: {
           customer: {
@@ -200,7 +200,7 @@ test('updateAccount updates attributes', setupFixtures(
       t.equal(result.fullName, 'Cooleo');
       t.equal(result.billing.customer.id, 2);
       t.notEqual(result.createdAt, result.updatedAt);
-    } catch(e) {
+    } catch (e) {
       t.fail('Should not get here');
     }
   }
@@ -225,10 +225,10 @@ test('updateAccount allows to update nested billing attributes', setupFixtures(
   }, true),
   async (t, ctx) => {
     t.plan(5);
-    
+
     t.equal(ctx.account.billing.subscription.status, 'trial');
 
-    const {result} = await updateAccount(ctx.account.id, {
+    const { result } = await updateAccount(ctx.account.id, {
       billing: {
         subscription: {
           id: 3,
@@ -249,13 +249,13 @@ test('updateAccount does not allow to update id', setupFixtures(
   async function (t, ctx) {
     t.plan(2);
     try {
-      const {result, statusCode} = await updateAccount(ctx.account.id, {
+      const { result, statusCode } = await updateAccount(ctx.account.id, {
         id: '123'
       });
 
       t.equal(result.id, ctx.account.id);
       t.notEqual(result.id, '123');
-    } catch(e) {
+    } catch (e) {
       t.fail('Should not get here');
     }
   }
@@ -266,7 +266,7 @@ test('updateAccount does not update random attributes', setupFixtures(
   async function (t, ctx) {
     t.plan(5);
     try {
-      const {result, statusCode} = await updateAccount(ctx.account.id, {
+      const { result, statusCode } = await updateAccount(ctx.account.id, {
         fullName: 'Cooleo',
         a: 2,
         b: 7
@@ -277,7 +277,7 @@ test('updateAccount does not update random attributes', setupFixtures(
       t.notEqual(result.createdAt, result.updatedAt);
       t.notOk(result.a);
       t.notOk(result.b);
-    } catch(e) {
+    } catch (e) {
       t.fail('Should not get here');
     }
   }
@@ -288,7 +288,7 @@ test('deleteAccount which does not exist', async function (t) {
   try {
     await deleteAccount('123');
     t.fail('Should not get here');
-  } catch(e) {
+  } catch (e) {
     t.equal(e.message, 'The account with id "123" does not exist.');
     t.equal(e.statusCode, 404);
   }
@@ -299,7 +299,7 @@ test('deleteAccount with invalid id', async (t) => {
   try {
     await deleteAccount(123);
     t.fail('Should not get here');
-  } catch(e) {
+  } catch (e) {
     t.equal(e.message, 'Validation failed.');
     t.equal(e.statusCode, 400);
     t.equal(e.errors.length, 1);
@@ -319,7 +319,7 @@ test('deleteAccount with valid id', async (t) => {
     const response = await deleteAccount(_response.result.account.id);
     t.equal(response.statusCode, 204);
     t.notOk(response.message);
-  } catch(e) {
+  } catch (e) {
     t.fail('Should not get here');
   }
 });
@@ -336,7 +336,7 @@ test('isValidPassword fails with wrong password', setupFixtures(
     try {
       const isValid = await isValidPassword(ctx.account.id, '12345679');
       t.notOk(isValid);
-    } catch(e) {
+    } catch (e) {
       t.fail('Should not get here');
     }
   }
@@ -361,7 +361,7 @@ test('isValidPassword succeeds with correct password', setupFixtures(
 
       const isValid = await isValidPassword(ctx.account.id, '12345678');
       t.ok(isValid);
-    } catch(e) {
+    } catch (e) {
       t.fail('Should not get here');
     }
   }
@@ -372,7 +372,7 @@ test('isValidPassword returns error with unknown account', async (t) => {
   try {
     const isValid = await isValidPassword('123', '12345678');
     t.fail('Should not get here');
-  } catch(e) {
+  } catch (e) {
     t.equal(e.message, 'The account with id "123" does not exist.');
     t.equal(e.statusCode, 404);
   }
@@ -383,7 +383,7 @@ test('isValidPassword returns error with invalid password', async (t) => {
   try {
     const isValid = await isValidPassword(123, '12');
     t.fail('Should not get here');
-  } catch(e) {
+  } catch (e) {
     t.equal(e.message, 'Validation failed.');
     t.equal(e.statusCode, 400);
     t.equal(e.errors.length, 2);
@@ -406,7 +406,7 @@ test('getAccountByEmail returns account if account exists', async (t) => {
     t.equal(response.result.fullName, 'Hi there');
 
     await deleteAccount(_response.result.account.id);
-  } catch(e) {
+  } catch (e) {
     t.fail('Should not get here');
   }
 });
@@ -416,7 +416,7 @@ test('getAccountByEmail returns 400 if invalid email gets passed', async (t) => 
   try {
     const response = await getAccountByEmail('fdsa');
     t.fail('Should not get here');
-  } catch(e) {
+  } catch (e) {
     t.equal(e.statusCode, 400);
     t.equal(e.message, 'Validation failed.');
     t.equal(e.errors.length, 1);
@@ -428,7 +428,7 @@ test('getAccountByEmail returns 404 if invalid email gets passed', async (t) => 
   try {
     const response = await getAccountByEmail('fdsa@fdsa.com');
     t.fail('Should not get here');
-  } catch(e) {
+  } catch (e) {
     t.equal(e.statusCode, 404);
     t.equal(e.message, 'The account with email "fdsa@fdsa.com" does not exist.');
   }
@@ -439,7 +439,7 @@ test('updatePassword returns 404 if invalid user id gets passed', async (t) => {
   try {
     const response = await updatePassword('123', '1234567', '1234567');
     t.fail('Should not get here');
-  } catch(e) {
+  } catch (e) {
     t.equal(e.statusCode, 404);
     t.equal(e.message, 'The account with id "123" does not exist.');
   }
@@ -450,7 +450,7 @@ test('updatePassword validates password input', async (t) => {
   try {
     const response = await updatePassword('123', '2', '2');
     t.fail('Should not get here');
-  } catch(e) {
+  } catch (e) {
     t.equal(e.statusCode, 400);
     t.equal(e.message, 'Validation failed.');
     t.equal(e.errors.length, 1);
@@ -472,7 +472,7 @@ test('updatePassword fails when invalid password is provided', setupFixtures(
     try {
       await updatePassword(ctx.account.id, '12345sdsdsds', '2dsdsdsdsdsds');
       t.fail('Should not get here');
-    } catch(e) {
+    } catch (e) {
       t.equal(e.statusCode, 400);
       t.equal(e.message, 'Validation failed.');
       t.equal(e.errors[0].message, 'The password provided is not valid.');
@@ -494,7 +494,7 @@ test('updatePassword validates current password', setupFixtures(
       await updatePassword(ctx.account.id, '12345678', '87654321');
       const isValid = await isValidPassword(ctx.account.id, '87654321');
       t.ok(isValid);
-    } catch(e) {
+    } catch (e) {
       t.fail('Should not get here');
     }
   }
@@ -505,7 +505,7 @@ test('requestEmailChange validates input', async (t) => {
   try {
     await requestEmailChange();
     t.fail('Should not get here');
-  } catch(e) {
+  } catch (e) {
     t.equal(e.statusCode, 400);
     t.equal(e.errors.length, 2);
   }
@@ -516,7 +516,7 @@ test('requestEmailChange fails is unknown account is provided', async (t) => {
   try {
     const _user = await requestEmailChange('123', 'foo@example.com');
     t.fail('Should not get here');
-  } catch(e) {
+  } catch (e) {
     t.equal(e.statusCode, 404);
     t.equal(e.message, 'The account with id "123" does not exist.');
   }
@@ -538,7 +538,7 @@ test('requestEmailChange returns hash to reset email', async (t) => {
     t.ok(response.result.hash);
 
     await deleteAccount(_response.result.account.id);
-  } catch(e) {
+  } catch (e) {
     t.fail('Should not get here', e);
   }
 });
@@ -548,7 +548,7 @@ test('updateEmailWithToken validates input', async (t) => {
   try {
     const response = await updateEmailWithToken();
     t.fail('Should not get here');
-  } catch(e) {
+  } catch (e) {
     t.equal(e.errors.length, 1);
     t.equal(e.statusCode, 400);
   }
@@ -559,13 +559,13 @@ test('updateEmailWithToken returns 404 for invalid hash', async (t) => {
   try {
     const response = await updateEmailWithToken('123');
     t.fail('Should not get here');
-  } catch(e) {
+  } catch (e) {
     t.equal(e.message, 'You provided an invalid token to reset your email.');
     t.equal(e.statusCode, 404);
   }
 });
 
-test('updateEmailWithToken does not allow to update to an existing email', async(t) => {
+test('updateEmailWithToken does not allow to update to an existing email', async (t) => {
   t.plan(2);
   let responseOne, responseTwo;
   try {
@@ -588,11 +588,11 @@ test('updateEmailWithToken does not allow to update to an existing email', async
       scope: ['user']
     });
 
-    const {result, statusCode} = await updateEmailWithToken(tokenResponse.result.hash);
+    const { result, statusCode } = await updateEmailWithToken(tokenResponse.result.hash);
 
     t.fail('Should not get here', e);
 
-  } catch(e) {
+  } catch (e) {
     t.equal(e.statusCode, 400);
     t.equal(e.message, 'We were not able to update the accounts email. The email is already in use.');
     await deleteAccount(responseOne.result.account.id);
@@ -612,12 +612,12 @@ test('updateEmailWithToken updates email.', async (t) => {
     });
 
     const tokenResponse = await requestEmailChange(response.result.account.id, newEmail);
-    const {result, statusCode} = await updateEmailWithToken(tokenResponse.result.hash);
+    const { result, statusCode } = await updateEmailWithToken(tokenResponse.result.hash);
 
     t.equal(statusCode, 200);
 
     await deleteAccount(response.result.account.id);
-  } catch(e) {
+  } catch (e) {
     t.fail('Should not get here', e);
   }
 });
@@ -639,7 +639,7 @@ test('updateEmailWithToken does not update expired token.', async (t) => {
     await updateEmailWithToken(tokenResponse.result.hash, Math.round((new Date).getTime() / 1000) + twoDays);
 
     t.fail('Should not get here');
-  } catch(e) {
+  } catch (e) {
     t.equal(e.message, 'The token to reset your email has expired.');
     t.equal(e.statusCode, 401);
     await deleteAccount(response.result.account.id);
@@ -653,18 +653,18 @@ test('updateEmailWithToken sets new email.', setupFixtures(
     fullName: `${faker.name.firstName()} ${faker.name.lastName()}`,
     scope: ['user']
   }, true),
-  async(t, ctx) => {
+  async (t, ctx) => {
     t.plan(2);
     try {
       const newEmail = faker.internet.exampleEmail();
-      const {result} = await requestEmailChange(ctx.account.id, newEmail);
+      const { result } = await requestEmailChange(ctx.account.id, newEmail);
 
-      const {statusCode} = await updateEmailWithToken(result.hash);
+      const { statusCode } = await updateEmailWithToken(result.hash);
       t.equal(statusCode, 200);
 
       const _response = await getAccount(ctx.account.id);
       t.equal(_response.result.email, newEmail);
-    } catch(e) {
+    } catch (e) {
       t.fail('Should not get here', e);
     }
   }
@@ -675,7 +675,7 @@ test('requestPasswordReset validates input', async (t) => {
   try {
     await requestPasswordReset();
     t.fail('Should not get here');
-  } catch(e) {
+  } catch (e) {
     t.equal(e.statusCode, 400);
     t.equal(e.errors.length, 1);
   }
@@ -686,7 +686,7 @@ test('requestPasswordReset fails is unknown user is provided', async (t) => {
   try {
     await requestPasswordReset('123@fdsa.com');
     t.fail('Should not get here');
-  } catch(e) {
+  } catch (e) {
     t.equal(e.statusCode, 404);
     t.equal(e.message, 'The account with email "123@fdsa.com" does not exist.');
   }
@@ -709,7 +709,7 @@ test('requestPasswordReset returns hash and user to reset password', async (t) =
     t.ok(response.result.hash);
 
     await deleteAccount(_response.result.account.id);
-  } catch(e) {
+  } catch (e) {
     t.fail('Should not get here', e);
   }
 });
@@ -719,7 +719,7 @@ test('updatePasswordWithToken validates input', async (t) => {
   try {
     await updatePasswordWithToken();
     t.fail('Should not get here');
-  } catch(e) {
+  } catch (e) {
     t.equal(e.errors.length, 2);
     t.equal(e.statusCode, 400);
   }
@@ -730,7 +730,7 @@ test('updatePasswordWithToken returns 404 for invalid hash', async (t) => {
   try {
     const response = await updatePasswordWithToken('123', '123321123');
     t.fail('Should not get here');
-  } catch(e) {
+  } catch (e) {
     t.equal(e.message, 'You provided an invalid token to reset your password.');
     t.equal(e.statusCode, 404);
   }
@@ -750,7 +750,7 @@ test('updatePasswordWithToken validates password.', async (t) => {
     const response = await updatePasswordWithToken(tokenResponse.result.hash, '123');
 
     await deleteAccount(_response.result.account.id);
-  } catch(e) {
+  } catch (e) {
     t.equal(e.statusCode, 400);
     t.equal(e.errors[0].field, 'password');
     t.equal(e.errors[0].message, 'Your password should be at least 7 characters long.');
@@ -775,7 +775,7 @@ test('updatePasswordWithToken updates password.', async (t) => {
     t.equal(response.statusCode, 200);
 
     await deleteAccount(_response.result.account.id);
-  } catch(e) {
+  } catch (e) {
     t.fail('Should not get here', e);
   }
 });
@@ -797,7 +797,7 @@ test('updatePasswordWithToken does not update expired token.', async (t) => {
 
     t.fail('Should not get here');
 
-  } catch(e) {
+  } catch (e) {
     t.equal(e.message, `The token you provided is not valid.`);
     t.equal(e.statusCode, 401);
     await deleteAccount(_response.result.account.id);

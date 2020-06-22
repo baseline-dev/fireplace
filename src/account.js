@@ -315,7 +315,7 @@ async function updateAccount(id, accountProps) {
     });
   } catch (e) {
     if (e instanceof BaselineError) throw e;
-    
+
     let message, statusCode;
     switch (e.name) {
       case 'ConditionalCheckFailedException':
