@@ -35,8 +35,6 @@
     "lodash.isempty": "^4.4.0",
     "lodash.omit": "^4.5.0",
     "lodash.pick": "^4.4.0",
-    "nodemailer": "^6.4.10",
-    "nunjucks": "^3.2.1",
     "parse-full-name": "^1.2.4",
     "ulid": "^2.3.0"
   },
