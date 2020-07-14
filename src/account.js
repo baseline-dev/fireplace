@@ -1,5 +1,5 @@
 import { ulid } from 'ulid';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import Validator from 'fastest-validator';
 import { BaselineError, BaselineSuccess } from '@baseline-dev/reporter';
 import { translateValidationErrors } from './lib/translate-validation-errors';
