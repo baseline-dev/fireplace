@@ -792,6 +792,7 @@ test('updatePasswordWithToken does not update expired token.', async (t) => {
     });
 
     const twoDays = 60 * 60 * 48;
+
     const tokenResponse = await requestPasswordReset(_response.result.account.email);
     await updatePasswordWithToken(tokenResponse.result.hash, '123123123', Math.round((new Date).getTime() / 1000) + twoDays);
 

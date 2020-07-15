@@ -13,14 +13,6 @@ import {
   setupAccountPassword
 } from './account';
 
-if (!process.env.BASELINE_FIREPLACE_DYNAMODB_TABLENAME) {
-  throw new Error(`Please configure the environment variable 'BASELINE_FIREPLACE_DYNAMODB_TABLENAME'.`);
-}
-
-if (!process.env.BASELINE_FIREPLACE_DYNAMODB_REGION) {
-  throw new Error(`Please configure the environment variable 'BASELINE_FIREPLACE_DYNAMODB_REGION'.`);
-}
-
 export {
   getAccount,
   getAccountByEmail,

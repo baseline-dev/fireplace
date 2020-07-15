@@ -7,7 +7,7 @@ import omit from 'lodash.omit';
 import pick from 'lodash.pick';
 import get from 'lodash.get';
 import isEmpty from 'lodash.isempty';
-import { transactWrite, docClient, tableName } from './lib/client';
+import { getTransactWrite, getDocClient, getTableName } from './lib/client';
 import accountSchema from './account-schema';
 
 const validator = new Validator();
@@ -35,8 +35,9 @@ async function getAccount(id) {
   if (validation !== true) throw new BaselineError(translateValidationErrors(validation));
 
   try {
+    const docClient = getDocClient();
     const account = await docClient.get({
-      TableName: tableName,
+      TableName: getTableName(),
       Key: {
         'pk': `ACCOUNT#${id}`,
         'sk': `ACCOUNT#${id}`,
@@ -67,8 +68,9 @@ async function getAccountByEmail(email) {
   if (validation !== true) throw new BaselineError(translateValidationErrors(validation));
 
   try {
+    const docClient = getDocClient();
     const account = await docClient.get({
-      TableName: tableName,
+      TableName: getTableName(),
       Key: {
         'pk': `EMAIL#${email}`,
         'sk': `EMAIL#${email}`,
@@ -121,7 +123,7 @@ async function createAccount(account = {}) {
   const params = {
     TransactItems: [{
       Put: {
-        TableName: tableName,
+        TableName: getTableName(),
         ConditionExpression: "attribute_not_exists(pk)",
         Item: {
           'pk': `ACCOUNT#${accountProps.id}`,
@@ -138,7 +140,7 @@ async function createAccount(account = {}) {
       }
     }, {
       Put: {
-        TableName: tableName,
+        TableName: getTableName(),
         ConditionExpression: "attribute_not_exists(pk)",
         Item: {
           'pk': `EMAIL#${accountProps.email}`,
@@ -150,7 +152,7 @@ async function createAccount(account = {}) {
       }
     }, {
       Put: {
-        TableName: tableName,
+        TableName: getTableName(),
         Item: {
           'pk': `SETUPACCOUNT#${changeEmailId}`,
           'sk': `SETUPACCOUNT#${changeEmailId}`,
@@ -164,6 +166,7 @@ async function createAccount(account = {}) {
   };
 
   try {
+    const transactWrite = getTransactWrite()
     await transactWrite(params);
     return new BaselineSuccess({
       result: {
@@ -203,7 +206,7 @@ async function deleteAccount(id) {
   const params = {
     TransactItems: [{
       Delete: {
-        TableName: tableName,
+        TableName: getTableName(),
         Key: {
           'pk': `ACCOUNT#${result.id}`,
           'sk': `ACCOUNT#${result.id}`,
@@ -211,7 +214,7 @@ async function deleteAccount(id) {
       }
     }, {
       Delete: {
-        TableName: tableName,
+        TableName: getTableName(),
         Key: {
           'pk': `EMAIL#${result.email}`,
           'sk': `EMAIL#${result.email}`,
@@ -221,6 +224,7 @@ async function deleteAccount(id) {
   };
 
   try {
+    const docClient = getDocClient();
     await docClient.transactWrite(params).promise();
     return new BaselineSuccess({
       statusCode: 204
@@ -289,7 +293,7 @@ async function updateAccount(id, accountProps) {
     })
 
     const params = {
-      TableName: tableName,
+      TableName: getTableName(),
       Key: {
         'pk': `ACCOUNT#${id}`,
         'sk': `ACCOUNT#${id}`
@@ -300,6 +304,7 @@ async function updateAccount(id, accountProps) {
       ReturnValues: 'ALL_NEW'
     };
 
+    const docClient = getDocClient();
     const account = await docClient.update(params).promise();
 
     if (!account.Attributes) {
@@ -356,7 +361,7 @@ async function updatePassword(id, oldPassword, newPassword) {
     }
 
     const params = {
-      TableName: tableName,
+      TableName: getTableName(),
       Key: {
         'pk': `ACCOUNT#${id}`,
         'sk': `ACCOUNT#${id}`
@@ -370,6 +375,7 @@ async function updatePassword(id, oldPassword, newPassword) {
       ReturnValues: 'ALL_NEW'
     };
 
+    const docClient = getDocClient();
     const account = await docClient.update(params).promise();
 
     if (!account.Attributes) {
@@ -396,8 +402,9 @@ async function isValidPassword(id, password) {
   if (validation !== true) throw new BaselineError(translateValidationErrors(validation));
 
   try {
+    const docClient = getDocClient();
     const account = await docClient.get({
-      TableName: tableName,
+      TableName: getTableName(),
       Key: {
         'pk': `ACCOUNT#${id}`,
         'sk': `ACCOUNT#${id}`,
@@ -432,7 +439,7 @@ async function requestEmailChange(id, newEmail) {
   const params = {
     TransactItems: [{
       'ConditionCheck': {
-        'TableName': tableName,
+        'TableName': getTableName(),
         'Key': {
           'pk': `ACCOUNT#${id}`,
           'sk': `ACCOUNT#${id}`,
@@ -441,7 +448,7 @@ async function requestEmailChange(id, newEmail) {
       }
     }, {
       'ConditionCheck': {
-        'TableName': tableName,
+        'TableName': getTableName(),
         'Key': {
           'pk': `EMAIL#${newEmail}`,
           'sk': `EMAIL#${newEmail}`,
@@ -450,7 +457,7 @@ async function requestEmailChange(id, newEmail) {
       }
     }, {
       Put: {
-        TableName: tableName,
+        TableName: getTableName(),
         Item: {
           'pk': `CHANGEEMAILREQUEST#${changeEmailId}`,
           'sk': `CHANGEEMAILREQUEST#${changeEmailId}`,
@@ -466,6 +473,7 @@ async function requestEmailChange(id, newEmail) {
   };
 
   try {
+    const transactWrite = getTransactWrite();
     await transactWrite(params);
 
     return new BaselineSuccess({
@@ -513,8 +521,10 @@ async function updateEmailWithToken(token, _testNow) {
     const dateTime = (new Date).toISOString();
     const now = _testNow || Math.round((new Date).getTime() / 1000);
 
+    const transactWrite = getTransactWrite();
+    const docClient = getDocClient();
     const response = await docClient.get({
-      TableName: tableName,
+      TableName: getTableName(),
       Key: {
         'pk': `CHANGEEMAILREQUEST#${token}`,
         'sk': `CHANGEEMAILREQUEST#${token}`,
@@ -536,7 +546,7 @@ async function updateEmailWithToken(token, _testNow) {
     if (response.Item.oldEmail !== response.Item.newEmail) {
       items = [{
         Delete: {
-          'TableName': tableName,
+          'TableName': getTableName(),
           'Key': {
             'pk': `EMAIL#${response.Item.oldEmail}`,
             'sk': `EMAIL#${response.Item.oldEmail}`,
@@ -544,7 +554,7 @@ async function updateEmailWithToken(token, _testNow) {
         }
       }, {
         Put: {
-          'TableName': tableName,
+          'TableName': getTableName(),
           'Item': {
             'pk': `EMAIL#${response.Item.newEmail}`,
             'sk': `EMAIL#${response.Item.newEmail}`,
@@ -560,7 +570,7 @@ async function updateEmailWithToken(token, _testNow) {
     const params = {
       TransactItems: [...items, {
         Delete: {
-          'TableName': tableName,
+          'TableName': getTableName(),
           'Key': {
             'pk': `CHANGEEMAILREQUEST#${token}`,
             'sk': `CHANGEEMAILREQUEST#${token}`
@@ -575,7 +585,7 @@ async function updateEmailWithToken(token, _testNow) {
         }
       }, {
         Update: {
-          TableName: tableName,
+          TableName: getTableName(),
           Key: {
             'pk': `ACCOUNT#${response.Item.accountId}`,
             'sk': `ACCOUNT#${response.Item.accountId}`
@@ -625,6 +635,7 @@ async function requestPasswordReset(email) {
   if (validation !== true) throw new BaselineError(translateValidationErrors(validation));
 
   const account = await getAccountByEmail(email);
+
   const changePasswordHash = ulid();
   const oneDay = 60 * 60 * 24;
   const dateTime = (new Date).toISOString();
@@ -633,7 +644,7 @@ async function requestPasswordReset(email) {
   const params = {
     TransactItems: [{
       'ConditionCheck': {
-        'TableName': tableName,
+        'TableName': getTableName(),
         'Key': {
           'pk': `ACCOUNT#${account.result.id}`,
           'sk': `ACCOUNT#${account.result.id}`,
@@ -642,7 +653,7 @@ async function requestPasswordReset(email) {
       }
     }, {
       Put: {
-        TableName: tableName,
+        TableName: getTableName(),
         Item: {
           'pk': `CHANGEPASSWORDREQUEST#${changePasswordHash}`,
           'sk': `CHANGEPASSWORDREQUEST#${changePasswordHash}`,
@@ -656,6 +667,7 @@ async function requestPasswordReset(email) {
   };
 
   try {
+    const docClient = getDocClient();
     const response = await docClient.transactWrite(params).promise();
     return new BaselineSuccess({
       result: {
@@ -689,9 +701,10 @@ async function updatePasswordWithToken(token, newPassword, _testNow) {
 
   try {
     const now = _testNow || Math.round((new Date).getTime() / 1000);
-
+    
+    const docClient = getDocClient();
     const response = await docClient.get({
-      TableName: tableName,
+      TableName: getTableName(),
       Key: {
         'pk': `CHANGEPASSWORDREQUEST#${token}`,
         'sk': `CHANGEPASSWORDREQUEST#${token}`,
@@ -708,7 +721,7 @@ async function updatePasswordWithToken(token, newPassword, _testNow) {
     const params = {
       TransactItems: [{
         Delete: {
-          'TableName': tableName,
+          'TableName': getTableName(),
           'Key': {
             'pk': `CHANGEPASSWORDREQUEST#${token}`,
             'sk': `CHANGEPASSWORDREQUEST#${token}`
@@ -723,7 +736,7 @@ async function updatePasswordWithToken(token, newPassword, _testNow) {
         }
       }, {
         Update: {
-          TableName: tableName,
+          TableName: getTableName(),
           Key: {
             'pk': `ACCOUNT#${response.Item.accountId}`,
             'sk': `ACCOUNT#${response.Item.accountId}`
@@ -738,7 +751,7 @@ async function updatePasswordWithToken(token, newPassword, _testNow) {
       }]
     };
 
-    const transaction = await docClient.transactWrite(params).promise();
+    await docClient.transactWrite(params).promise();
 
     return new BaselineSuccess({
       statusCode: 200
@@ -769,9 +782,12 @@ async function setupAccountPassword(token, password, _testNow) {
 
   try {
     const now = _testNow || Math.round((new Date).getTime() / 1000);
+    
+    const docClient = getDocClient();
+    const transactWrite = getTransactWrite();
 
     const response = await docClient.get({
-      TableName: tableName,
+      TableName: getTableName(),
       Key: {
         'pk': `SETUPACCOUNT#${token}`,
         'sk': `SETUPACCOUNT#${token}`,
@@ -788,7 +804,7 @@ async function setupAccountPassword(token, password, _testNow) {
     const params = {
       TransactItems: [{
         Delete: {
-          'TableName': tableName,
+          'TableName': getTableName(),
           'Key': {
             'pk': `SETUPACCOUNT#${token}`,
             'sk': `SETUPACCOUNT#${token}`
@@ -803,7 +819,7 @@ async function setupAccountPassword(token, password, _testNow) {
         }
       }, {
         Update: {
-          TableName: tableName,
+          TableName: getTableName(),
           Key: {
             'pk': `ACCOUNT#${response.Item.accountId}`,
             'sk': `ACCOUNT#${response.Item.accountId}`
